@@ -24,7 +24,10 @@ router.post(
   async (req, res, next) => {
     // DO YOUR MAGIC
     try {
-      const newAccount = await Account.create(req.body);
+      const newAccount = await Account.create({
+        name: req.body.name.trim(),
+        budget: req.body.budget,
+      });
       res.status(201).json(newAccount);
     } catch (error) {
       next(error);
@@ -36,21 +39,23 @@ router.put(
   "/:id",
   md.checkAccountId,
   md.checkAccountPayload,
-  md.checkAccountNameUnique,
-  (req, res, next) => {
+  async (req, res, next) => {
     // DO YOUR MAGIC
+    const updated = await Account.updateById(req.params.id, req.body);
+
     try {
-      res.json("update accounts");
+      res.json(updated);
     } catch (error) {
       next(error);
     }
   }
 );
 
-router.delete("/:id", md.checkAccountId, (req, res, next) => {
+router.delete("/:id", md.checkAccountId, async (req, res, next) => {
   // DO YOUR MAGIC
   try {
-    res.json("delete accounts");
+    await Account.deleteById(req.params.id);
+    res.json(req.account);
   } catch (error) {
     next(error);
   }
